@@ -356,19 +356,37 @@ def sus_strategy(score, opponent_score, threshold=11, num_rolls=6):
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
 
-    Use Sus Update Rule
-    When you can reach GOAL, just roll 0, 1 or 2.
-    When roll 0 scores more than roll 6, just roll 0 
+    1.  Secure the Win: First, it checks if rolling 0, 1, or 2 dice
+        is enough to reach the GOAL score. If an immediate win is
+        possible, it chooses the lowest number of rolls to win safely.
+
+    2.  Manage Risk: If a win is not guaranteed, the strategy adjusts
+        its default roll based on the score. It plays conservatively by
+        defaulting to 5 rolls when leading or tied, and more aggressively
+        with 6 rolls when trailing.
+
+    3.  Use Free Bacon: Finally, it compares the guaranteed points from
+        rolling 0 against the average points from its risk-adjusted
+        default roll (5 or 6). It will always choose to roll 0 if it
+        yields a higher or equal score.
     """
     # BEGIN PROBLEM 12
-    n = (GOAL - score) // 6
-    if n <= 2:
-        return n
-    roll_average = make_averaged(sus_update, 100)
-    if sus_update(0, score, opponent_score) >= roll_average(6, score, opponent_score):
+    num_rolls = 0
+    while num_rolls <= 2:
+        score_after_update = sus_update(num_rolls, score, opponent_score)
+        if score_after_update >= GOAL:
+            return num_rolls
+        num_rolls += 1
+    
+    average_stragety = make_averaged(sus_update, 50)
+    if score >= opponent_score:
+        num_rolls = 5
+    else:
+        num_rolls = 6
+    if sus_update(0, score, opponent_score) >= average_stragety(num_rolls, score, opponent_score):
         return 0
     else:
-        return 6
+        return num_rolls
     # END PROBLEM 12
 
 
