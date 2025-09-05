@@ -24,3 +24,47 @@ def again(f):
                 return n
             m += 1
         n += 1
+
+    
+"""fa17-mt1-q4a"""
+def collapse(n):
+    """For non-negative N, the result of removing all digits that are equal
+    to the digit on their right, so that no adjacent digits are the same.
+    >>> collapse(1234)
+    1234
+    >>> collapse(12234441)
+    12341
+    >>> collapse(0)
+    0
+    >>> collapse(3)
+    3
+    >>> collapse(11200000013333)
+    12013
+    """
+    left, last = n // 10, n % 10
+    if left == 0:
+        return last
+    elif left % 10 == last:
+        return collapse(left)
+    else:
+        return collapse(left) * 10 + last
+    
+
+"""fa19-final-q6b"""
+def contains(a, b):
+    """Return whether the digits of a are contained in the digits of b.
+    >>> contains(357, 12345678)
+    True
+    >>> contains(753, 12345678)
+    False
+    >>> contains(357, 37)
+    False
+    """
+    if a == b:
+        return True
+    if a > b:
+        return False
+    if a % 10 != b % 10:
+        return contains(a, b // 10)
+    else:
+        return contains(a // 10, b // 10)
