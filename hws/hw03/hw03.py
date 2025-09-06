@@ -222,6 +222,20 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
+    def mid_stack():
+        if start + end == 5:
+            return 1
+        elif start + end == 4:
+            return 2
+        else:
+            return 3
+
+    if n == 1:
+        print_move(start, end)
+    else:
+        move_stack(n - 1, start, mid_stack())
+        print_move(start, end)
+        move_stack(n - 1, mid_stack(), end)
 
 
 from operator import sub, mul
@@ -237,5 +251,10 @@ def make_anonymous_factorial():
     ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    # 方法一：将需要递归调用的函数创建于一个匿名函数之下，这个函数使用f参数接受函数名
+    #        f参数指向的是其parent
+    # return (lambda f: f(f))(lambda f: lambda x: 1 if x == 0 else f(f)(x - 1) * x)
+
+    # 方法二：需要递归的函数的f参数是自身
+    return (lambda f: lambda x: f(f, x))(lambda f, x: 1 if x == 0 else f(f, x - 1) * x)
 
