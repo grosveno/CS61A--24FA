@@ -159,11 +159,17 @@ def memo(f):
 
 def memo_diff(diff_function):
     """A memoization function."""
-    cache = {}
+    cache = {}         # (typed, source) : (limit, distance)
 
     def memoized(typed, source, limit):
         # BEGIN PROBLEM EC
         "*** YOUR CODE HERE ***"
+        key = (typed, source)
+        # 当使用的limit小于给定的limit，结果是不可信的
+        # 当key不在cache中，也需要重新计算
+        if key not in cache or cache[key][0] < limit:
+            cache[key] = (limit, diff_function(typed, source, limit))
+        return cache[key][1]
         # END PROBLEM EC
 
     return memoized
@@ -244,6 +250,7 @@ def furry_fixes(typed, source, limit):
     # END PROBLEM 6
 
 
+@memo_diff
 def minimum_mewtations(typed, source, limit):
     """A diff function for autocorrect that computes the edit distance from TYPED to SOURCE.
     This function takes in a string TYPED, a string SOURCE, and a number LIMIT.
@@ -261,21 +268,21 @@ def minimum_mewtations(typed, source, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    if limit < 0:
-        return 1
     if typed == source: # 如果相等，直接返回 0
         return 0
+    if limit == 0:
+        return 1
     if len(typed) == 0:
         return len(source)
     if len(source) == 0:
         return len(typed)
     
-    add = 1 + minimum_mewtations(typed, source[1:], limit - 1)
-    remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
     if typed[0] == source[0]:
         do_nothing = minimum_mewtations(typed[1:], source[1:], limit)
-        return min(do_nothing, add, remove)
+        return do_nothing
     else:
+        add = 1 + minimum_mewtations(typed, source[1:], limit - 1)
+        remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
         substitute = 1 + minimum_mewtations(typed[1:], source[1:], limit - 1)
         return min(add, remove, substitute)
     
