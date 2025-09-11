@@ -173,7 +173,7 @@ def memo_diff(diff_function):
 # Phase 2 #
 ###########
 
-
+@memo
 def autocorrect(typed_word, word_list, diff_function, limit):
     """Returns the element of WORD_LIST that has the smallest difference
     from TYPED_WORD based on DIFF_FUNCTION. If multiple words are tied for the smallest difference,
@@ -263,19 +263,19 @@ def minimum_mewtations(typed, source, limit):
     """
     if limit < 0:
         return 1
-    if typed == source:
+    if typed == source: # 如果相等，直接返回 0
         return 0
     if len(typed) == 0:
         return len(source)
     if len(source) == 0:
         return len(typed)
+    
+    add = 1 + minimum_mewtations(typed, source[1:], limit - 1)
+    remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
     if typed[0] == source[0]:
         do_nothing = minimum_mewtations(typed[1:], source[1:], limit)
-        remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
-        return min(do_nothing, remove)
+        return min(do_nothing, add, remove)
     else:
-        add = 1 + minimum_mewtations(typed, source[1:], limit - 1)
-        remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
         substitute = 1 + minimum_mewtations(typed[1:], source[1:], limit - 1)
         return min(add, remove, substitute)
     
@@ -402,7 +402,14 @@ def fastest_words(words_and_times):
     word_indices = range(len(words))    # contains an *index* for each word
     # BEGIN PROBLEM 10
     "*** YOUR CODE HERE ***"
-    
+    fastest_words_list = [[] for _ in player_indices]
+    for i in word_indices:
+        fastest_player = 0
+        for j in player_indices:
+            if times[j][i] < times[fastest_player][i]:
+                fastest_player = j
+        fastest_words_list[fastest_player].append(words[i])
+    return fastest_words_list
     # END PROBLEM 10
 
 
